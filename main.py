@@ -40,7 +40,7 @@ def removeWordsNotContaining(possibleWords, letter):
 def removeWordsNotContainingAt(possibleWords, letter, location):
     if location == 0:
         possibleWords = [possibleWords[ord(letter) - ord("a")]]
-        return
+        return possibleWords
     
     newPossibleWords = []
     for wordList in possibleWords:
@@ -61,7 +61,7 @@ def removeWordsContaining(possibleWords, letter):
         newPossibleWords.append(subList)
     return newPossibleWords
 
-def parseCorrections(possibleWords, guess, corrections, possibleAnswer):
+def parseCorrections(possibleWords, guess, corrections):
     for i in range(len(corrections)):
         letter = guess[i]
         match corrections[i]:
@@ -76,12 +76,16 @@ def parseCorrections(possibleWords, guess, corrections, possibleAnswer):
     return possibleWords
 
 def playGame(possibleWords):
-    possibleAnswer = "_____"
     while True:
         numPossibleWords = sum(len(sublist) for sublist in possibleWords)
         print(f"{numPossibleWords} possible words")
         if numPossibleWords < 20:
-            print(possibleWords)
+            words = ""
+            for wordList in possibleWords:
+                for word in wordList:
+                    words += f"{word}, "
+            print(words)
+        
         guess = input("Enter guess: ")
         while len(guess) < 5:
             print("Guess too short. Try again: ")
@@ -92,7 +96,7 @@ def playGame(possibleWords):
             print("Corrections too short. Try again: ")
             corrections = input("Enter corrections: ")
 
-        possibleWords = parseCorrections(possibleWords, guess, corrections, possibleAnswer)
+        possibleWords = parseCorrections(possibleWords, guess, corrections)
 
 def loadWordList():
     words = []
@@ -124,8 +128,6 @@ def main():
     parsedWords = parseWordList(words)
     printInstructions()
     playGame(parsedWords)
-
-
 
 if __name__ == "__main__":
     main()
