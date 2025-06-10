@@ -76,9 +76,9 @@ def parseCorrections(possibleWords, guess, corrections):
     return possibleWords
 
 def playGame(possibleWords):
-    while True:
-        numPossibleWords = sum(len(sublist) for sublist in possibleWords)
-        print(f"{numPossibleWords} possible words")
+    numPossibleWords = sum(len(sublist) for sublist in possibleWords)
+    while numPossibleWords > 1:
+        print(f"{numPossibleWords} possible word(s)")
         if numPossibleWords < 20:
             words = ""
             for wordList in possibleWords:
@@ -97,6 +97,7 @@ def playGame(possibleWords):
             corrections = input("Enter corrections: ")
 
         possibleWords = parseCorrections(possibleWords, guess, corrections)
+        numPossibleWords = sum(len(sublist) for sublist in possibleWords)
 
 def loadWordList():
     words = []
