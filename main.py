@@ -38,10 +38,6 @@ def removeWordsNotContaining(possibleWords, letter):
     return newPossibleWords
 
 def removeWordsNotContainingAt(possibleWords, letter, location):
-    if location == 0:
-        possibleWords = [possibleWords[ord(letter) - ord("a")]]
-        return possibleWords
-    
     newPossibleWords = []
     for wordList in possibleWords:
         subList = []
