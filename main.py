@@ -11,21 +11,77 @@ def printInstructions():
     "x - letter not present\n"
     print(instructions)
 
-def parseCorrections(possibleWords, corrections):
+# This function takes the letter that is not found in the word and which
+# position in the word it is and removes those words from the possible words
+def removeWordContainingAt(possibleWords, letter, location):
+    if location == 0:
+        possibleWords.pop(location)
 
-    for correction in corrections:
-        match correction:
+    newPossibleWords = []
+    
+    for wordList in possibleWords:
+        subList = []
+        for word in wordList:
+            if word[location] != letter:
+                subList.append(word)
+        newPossibleWords.append(subList)
+    return newPossibleWords
+
+def removeWordsNotContaining(possibleWords, letter):
+    newPossibleWords = []
+    for wordList in possibleWords:
+        subList = []
+        for word in wordList:
+            if letter in word:
+                subList.append(word)
+        newPossibleWords.append(subList)
+    return newPossibleWords
+
+def removeWordsNotContainingAt(possibleWords, letter, location):
+    if location == 0:
+        possibleWords = [possibleWords[ord(letter) - ord("a")]]
+        return
+    
+    newPossibleWords = []
+    for wordList in possibleWords:
+        subList = []
+        for word in wordList:
+            if word[location] == letter:
+                subList.append(word)
+        newPossibleWords.append(subList)
+    return newPossibleWords
+
+def removeWordsContaining(possibleWords, letter):
+    newPossibleWords = []
+    for wordList in possibleWords:
+        subList = []
+        for word in wordList:
+            if letter not in word:
+                subList.append(word)
+        newPossibleWords.append(subList)
+    return newPossibleWords
+
+def parseCorrections(possibleWords, guess, corrections, possibleAnswer):
+    for i in range(len(corrections)):
+        letter = guess[i]
+        match corrections[i]:
             case '*':
-                pass
+                possibleWords = removeWordsNotContaining(possibleWords, letter)
+                possibleWords = removeWordsNotContainingAt(possibleWords ,letter, i)
             case '^':
-                pass
+                possibleWords = removeWordContainingAt(possibleWords, letter, i)
+                possibleWords = removeWordsNotContaining(possibleWords, letter)
             case 'x':
-                pass
-
-    return
+                possibleWords = removeWordsContaining(possibleWords, letter)
+    return possibleWords
 
 def playGame(possibleWords):
+    possibleAnswer = "_____"
     while True:
+        numPossibleWords = sum(len(sublist) for sublist in possibleWords)
+        print(f"{numPossibleWords} possible words")
+        if numPossibleWords < 20:
+            print(possibleWords)
         guess = input("Enter guess: ")
         while len(guess) < 5:
             print("Guess too short. Try again: ")
@@ -36,14 +92,13 @@ def playGame(possibleWords):
             print("Corrections too short. Try again: ")
             corrections = input("Enter corrections: ")
 
-        parseCorrections(possibleWords, corrections)
+        possibleWords = parseCorrections(possibleWords, guess, corrections, possibleAnswer)
 
 def loadWordList():
     words = []
     with open("./words", "r") as file:
         for line in file:
             words.append(str(line).strip())
-
     return words
 
 # This function parses the word list into a list of lists where each index is a list
@@ -51,11 +106,13 @@ def loadWordList():
 def parseWordList(words):
     index = 0
     parsedWordList = []
-    for i in range(97,122):
+    for i in range(97,123):
         subList = []
-        
         while ord(words[index][0]) == i:
             subList.append(words[index])
+            # This feels like bad practice...
+            if index == len(words)-1:
+                break
             index += 1
 
         parsedWordList.append(subList)
